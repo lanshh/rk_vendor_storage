@@ -153,18 +153,27 @@ int hex_string_convert(const char *str, char *data, unsigned int len)
     return outsize;
 }
 
-#define LINE_LENGTH 3
+#define LINE_LENGTH 16
 void printhex(const char *data, int len, char *sep)
 {
-    int i = 0;
-
+    int i = 0, j = 0;
+    int lenmo = len - 1;
     if(!sep)
         sep = " ";
     printf("hex result:\n");
-    for (i = 0; i < len; i++) {
-        printf("%02x%s", data[i], sep);
+    if (0 == len)
+        printf("\n");
+    for (i = 0; i < lenmo; ) {
+        for (j = 0; ((i + j) < lenmo)  && (j < LINE_LENGTH); j ++) {
+            if (j != LINE_LENGTH - 1){
+                printf("%02x%s", data[i + j], sep);
+            } else {
+                printf("%02x\n", data[i + j]);
+            }
+        }
+        i += j;
     }
-    printf("\n");
+    printf("%02x\n", data[i]);
 }
 
 int parse_data(enum ITEM_TYPES item_type, const char *data, int len, const char **str)
@@ -191,6 +200,9 @@ int parse_data(enum ITEM_TYPES item_type, const char *data, int len, const char 
         if (!out) {
             DEBUG(("%s:malloc fail\n", __func__));
             return -12;
+        }
+        for (i = 0; i < len; i++) {
+            sprintf(&out[i*2], "%02X", data[i]);
         }
     } else if (CMD_STR == item_type) {
         olen = len + 1;
@@ -230,8 +242,6 @@ int parse_string(enum ITEM_TYPES item_type, const char *argv_str, char **data)
             DEBUG(("convert MAC fail\n"));
             goto parse_exit;
         } else {
-            DEBUG(("MAC is %02x:%02x:%02x:%02x:%02x:%02x\n",
-                out[0],out[1],out[2],out[3],out[4],out[5]));
             printhex(out, 6, ":");
         }
     } else if (CMD_BIN == item_type) {
@@ -245,7 +255,7 @@ int parse_string(enum ITEM_TYPES item_type, const char *argv_str, char **data)
             DEBUG(("convert binary fail\n"));
             goto parse_exit;
         } else {
-            printhex(out, 6, " ");
+            printhex(out, olen, " ");
         }
     } else if (CMD_STR == item_type) {
         olen = strlen(argv_str);

@@ -1,0 +1,25 @@
+#define VENDOR_SN_ID            1
+#define VENDOR_WIFI_MAC_ID      2
+#define VENDOR_LAN_MAC_ID       3
+#define VENDOR_BLUETOOTH_ID     4
+
+1、读写SN
+  rk_vendor_storage w -i 1 -t string -v rockchip20190327
+  rk_vendor_storage r -i 1 -t string
+
+2、读写MAC
+  rk_vendor_storage w -i 2 -t mac -v 0a0b11223344
+  rk_vendor_storage r -i 2 -t mac
+
+3、读写自定义ID
+  a、二进制格式
+    rk_vendor_storage w -i 7 -t binary -v 31323334353637
+    rk_vendor_storage r -i 7 -t binary
+
+  b、字符串格式
+    rk_vendor_storage w -i 7 -t string -v 31323334353637
+    rk_vendor_storage r -i 7 -t string
+
+  c、MAC格式
+    rk_vendor_storage w -i 4 -t mac -v 0a0b11223344
+    rk_vendor_storage r -i 4 -t mac
